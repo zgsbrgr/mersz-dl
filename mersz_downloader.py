@@ -2,6 +2,7 @@ import pdfkit
 from urllib.request import urlopen
 import argparse
 from PyPDF2 import PdfFileMerger
+import os
 
 parser = argparse.ArgumentParser(description='Optional app description')
 
@@ -15,9 +16,9 @@ pages = []
 
 parser.add_argument('--page_count', '-pc', type=int,
                     help='Page count')
-parser.add_argument('--document_pre', '-dp', type=String,
+parser.add_argument('--document_pre', '-dp', type=str,
                     help='Document prefix: like dj77mgtan__')
-parser.add_argument('--pdf_name', '-pn', type=String,
+parser.add_argument('--pdf_name', '-pn', type=str,
                     help='Name of the generated pdf document')
 
 args = parser.parse_args()
@@ -27,7 +28,7 @@ document = args.document_pre
 pdf_name = args.pdf_name
 
 for page_nr in range(1,page_count+1):
-	url = document_url+document_pre+str(page_nr)
+	url = document_url+document+str(page_nr)
 	html_text = urlopen(url).read().decode('utf-8')
 
 
@@ -41,7 +42,11 @@ for page_nr in range(1,page_count+1):
 
 
 
-	tmp = './temp/'+str(page_nr)+'.pdf'
+	tmp_dir = '.temp/'
+	if not os.path.exists(tmp_dir):
+		os.makedirs(tmp_dir)
+	tmp = tmp_dir+str(page_nr)+'.pdf'
+	
 	pdfkit.from_string(html_text, tmp, verbose=True, options = options)
 	pages.append(tmp)
 
